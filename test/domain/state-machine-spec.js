@@ -30,6 +30,39 @@ describe('State Machine', function() {
       tasks.should.be.eql(expectedTasks);
     });
 
+    it('should prompt for next player if current player scores a strike on a non-final frame', function() {
+      const playerNo = 1;
+      const frameNo = 1;
+      const bowlNo = 1;
+      const score = 10;
+
+      const stubScoreBoard = {
+        playersCount(){
+          return 2;
+        }
+      };
+
+      const expectedTasks = [
+        {
+          task: 'updateScoreBoard',
+          player: playerNo,
+          frame: frameNo,
+          bowl: bowlNo,
+          score: score
+        },
+        {
+          task: 'promptPlayerEnterScore',
+          player: 2,
+          frame: frameNo,
+          bowl: 1
+        }
+      ];
+
+      const tasks = stateMachine.enterPlayerScore(stubScoreBoard, playerNo, frameNo, bowlNo, score);
+
+      tasks.should.be.eql(expectedTasks);
+    });
+
     it('should prompt for next player after second bowl on first frame', function() {
       const playerNo = 1;
       const frameNo = 1;
@@ -96,5 +129,6 @@ describe('State Machine', function() {
 
       tasks.should.be.eql(expectedTasks);
     });
+
   });
 });

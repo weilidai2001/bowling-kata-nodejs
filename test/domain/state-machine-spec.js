@@ -236,5 +236,38 @@ describe('State Machine', function() {
 
       tasks.should.be.eql(expectedTasks);
     });
+
+    it('should prompt end game after final player has bowled for the final time on the final frame', function() {
+      const playerNo = 2;
+      const frameNo = 10;
+      const bowlNo = 2;
+      const score = 0;
+
+      const stubScoreBoard = {
+        playersCount(){
+          return 2;
+        },
+        getScore(){
+          return 5; // first bowl + second bowl < 10
+        }
+      };
+
+      const expectedTasks = [
+        {
+          task: 'updateScoreBoard',
+          player: playerNo,
+          frame: frameNo,
+          bowl: bowlNo,
+          score: score
+        },
+        {
+          task: 'promptEndGame'
+        }
+      ];
+
+      const tasks = stateMachine.enterPlayerScore(stubScoreBoard, playerNo, frameNo, bowlNo, score);
+
+      tasks.should.be.eql(expectedTasks);
+    });
   });
 });

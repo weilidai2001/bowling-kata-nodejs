@@ -1,6 +1,6 @@
 'use strict';
 const StateMachine = {
-  begin: () => {
+  begin () {
     return [
       {
         task: 'promptRegistration'
@@ -8,10 +8,10 @@ const StateMachine = {
     ]
   },
 
-  registration: users => {
+  registration (users) {
     return [
       {
-        task: 'initialiseScoreBoard',
+        task: 'addUsersToScoreBoard',
         users: users
       },
       {
@@ -23,26 +23,99 @@ const StateMachine = {
     ]
   },
 
-  enterPlayerScore: (currentScoreBoard, currentPlayerId, currentPlayerFrame, currentBowlNo, score) => {
-    if (nextPlayer){
+  enterPlayerScore (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) {
+    const isBowlComplete = (scoreBoard, currentFrame, currentBowlNo, score) => {
+      const isLastFrame = currentFrame == 10;
+      const isStrike = score == 10;
+      
+      if (!isLastFrame){
+        if (currentBowlNo == 1){
+          return isStrike;
+        } else {
+          return true;
+        }
+      
+      } else { // last frame
+        if (currentBowlNo == 2){
+          const Bowl1Score = scoreBoard.getScore(currentPlayerNo, currentFrame, 1);
+          const Bowl2Score = score;
+          
+          return !!(Bowl1Score == 10 || Bowl1Score + Bowl2Score == 10);
+        }
+        
+        return true;
+      }
+    };
+    
+    const isFrameComplete = (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) => false;
+    const emptyFramesExist = (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) => false;
+
+    if (!isBowlComplete(scoreBoard, currentFrame, currentBowlNo, score)) {
       return [
+        {
+          task: 'updateScoreBoard',
+          player: currentPlayerNo,
+          frame: currentFrame,
+          bowl: currentBowlNo,
+          score: score
+        },
         {
           task: 'promptPlayerEnterScore',
-          player: 999,
-          frame: 999,
-          bowl: 999
+          player: currentPlayerNo,
+          frame: currentFrame,
+          bowl: currentBowlNo + 1
         }
       ]
     }
 
-    if (gameEnd) {
+    if (!isFrameComplete(scoreBoard, currentFrame, currentBowlNo, score)) {
       return [
         {
-          task: 'promptEndGame'
+          task: 'updateScoreBoard',
+          player: currentPlayerNo,
+          frame: currentFrame,
+          bowl: currentBowlNo,
+          score: score
+        },
+        {
+          task: 'promptPlayerEnterScore',
+          player: currentPlayerNo + 1,
+          frame: currentFrame,
+          bowl: 1 // reset bowl
         }
       ]
     }
 
+    if (emptyFramesExist) {
+      return [
+        {
+          task: 'updateScoreBoard',
+          player: currentPlayerNo,
+          frame: currentFrame,
+          bowl: currentBowlNo,
+          score: score
+        },
+        {
+          task: 'promptPlayerEnterScore',
+          player: 1, // restart at player 1
+          frame: currentFrame + 1,
+          bowl: 1 // reset bowl
+        }
+      ]
+    }
+
+    return [
+      {
+        task: 'updateScoreBoard',
+        player: currentPlayerNo,
+        frame: currentFrame,
+        bowl: currentBowlNo,
+        score: score
+      },
+      {
+        task: 'promptEndGame'
+      }
+    ]
   }
 };
 

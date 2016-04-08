@@ -40,7 +40,7 @@ const StateMachine = {
           const Bowl1Score = scoreBoard.getScore(currentPlayerNo, currentFrame, 1);
           const Bowl2Score = score;
           
-          return !!(Bowl1Score == 10 || Bowl1Score + Bowl2Score == 10);
+          return !(Bowl1Score == 10 || Bowl1Score + Bowl2Score == 10);
         }
         
         return true;

@@ -1,19 +1,30 @@
-module.exports = function (){
-  var playerRow;
+const _ = require('lodash');
 
-  this.addUsers = function (userNames){
-    playerRow = userNames.map(name => ({name: name, frames: []}))
+module.exports = function () {
+  var scoreBoard = {};
+  var nameMapping = {};
+
+  this.initialiseScoreBoard = function (users) {
+    users.forEach(user => nameMapping[user.id] = user.name);
+
+    scoreBoard = {};
   };
 
-  this.playersCount = function() {
-    return playerRow.length;
+  this.playersCount = function () {
+    return _.keys(nameMapping).length;
   };
-  
-  this.getScore = function() {
-    
+
+  this.getScore = function (playerNo, frameNo, bowlNo) {
+    return scoreBoard[playerNo][frameNo][bowlNo];
   };
-  
-  this.updateScoreBoard = function(player, frame, bowl, score){
-    
+
+  this.addScoreToPerson = function (playerNo, frameNo, bowlNo, score) {
+    if (!scoreBoard[playerNo])
+      scoreBoard[playerNo] = {};
+
+    if (!scoreBoard[playerNo][frameNo])
+      scoreBoard[playerNo][frameNo] = {};
+
+    scoreBoard[playerNo][frameNo][bowlNo] = score;
   }
 };

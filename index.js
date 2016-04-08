@@ -14,7 +14,7 @@ const taskExecutor = {
     }
 
     if (task.task == 'addUsersToScoreBoard') {
-      scoreBoard.addUsers(task.users);
+      scoreBoard.initialiseScoreBoard(task.users);
     }
 
     if (task.task == 'promptPlayerEnterScore') {
@@ -22,7 +22,7 @@ const taskExecutor = {
     }
 
     if (task.task == 'updateScoreBoard') {
-      scoreBoard.updateScoreBoard(
+      scoreBoard.addScoreToPerson(
         task.player,
         task.frame,
         task.bowl,

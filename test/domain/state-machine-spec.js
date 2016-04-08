@@ -36,6 +36,12 @@ describe('State Machine', function() {
       const bowlNo = 2;
       const score = 5;
 
+      const stubScoreBoard = {
+        playersCount(){
+          return 2;
+        }
+      };
+
       const expectedTasks = [
         {
           task: 'updateScoreBoard',
@@ -52,7 +58,7 @@ describe('State Machine', function() {
         }
       ];
 
-      const tasks = stateMachine.enterPlayerScore(null, playerNo, frameNo, bowlNo, score);
+      const tasks = stateMachine.enterPlayerScore(stubScoreBoard, playerNo, frameNo, bowlNo, score);
 
       tasks.should.be.eql(expectedTasks);
     });
@@ -63,6 +69,12 @@ describe('State Machine', function() {
       const frameNo = 1;
       const bowlNo = 2;
       const score = 5;
+
+      const stubScoreBoard = {
+        playersCount(){
+          return 2;
+        }
+      };
 
       const expectedTasks = [
         {
@@ -80,7 +92,7 @@ describe('State Machine', function() {
         }
       ];
 
-      const tasks = stateMachine.enterPlayerScore(null, playerNo, frameNo, bowlNo, score);
+      const tasks = stateMachine.enterPlayerScore(stubScoreBoard, playerNo, frameNo, bowlNo, score);
 
       tasks.should.be.eql(expectedTasks);
     });

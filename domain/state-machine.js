@@ -24,7 +24,7 @@ const StateMachine = {
   },
 
   enterPlayerScore (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) {
-    const isBowlComplete = (scoreBoard, currentFrame, currentBowlNo, score) => {
+    const isFinalBowlInFrame = (scoreBoard, currentFrame, currentBowlNo, score) => {
       const isLastFrame = currentFrame == 10;
       const isStrike = score == 10;
       
@@ -47,10 +47,11 @@ const StateMachine = {
       }
     };
     
-    const isFrameComplete = (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) => false;
-    const emptyFramesExist = (scoreBoard, currentPlayerNo, currentFrame, currentBowlNo, score) => false;
+    const isFinalPlayerInFrame = (scoreBoard, currentPlayerNo) => currentPlayerNo == scoreBoard.playersCount();
 
-    if (!isBowlComplete(scoreBoard, currentFrame, currentBowlNo, score)) {
+    const isFinalFrame = currentFrame => currentFrame == 10;
+
+    if (!isFinalBowlInFrame(scoreBoard, currentFrame, currentBowlNo, score)) {
       return [
         {
           task: 'updateScoreBoard',
@@ -68,7 +69,7 @@ const StateMachine = {
       ]
     }
 
-    if (!isFrameComplete(scoreBoard, currentFrame, currentBowlNo, score)) {
+    if (!isFinalPlayerInFrame(scoreBoard, currentPlayerNo)) {
       return [
         {
           task: 'updateScoreBoard',
@@ -86,7 +87,7 @@ const StateMachine = {
       ]
     }
 
-    if (emptyFramesExist) {
+    if (!isFinalFrame(currentFrame)) {
       return [
         {
           task: 'updateScoreBoard',

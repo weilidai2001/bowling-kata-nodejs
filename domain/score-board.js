@@ -26,5 +26,17 @@ module.exports = function () {
       scoreBoard[playerNo][frameNo] = {};
 
     scoreBoard[playerNo][frameNo][bowlNo] = score;
+  };
+
+  this.getScoreBoard = function () {
+    return scoreBoard;
+  };
+
+  this.getPlayers = function() {
+    return _.map(nameMapping, (value, key) => ({id: key, name: value}));
+  };
+
+  this.getPlayerNameById = function(id) {
+    return nameMapping[id];
   }
 };

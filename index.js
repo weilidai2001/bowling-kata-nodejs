@@ -1,5 +1,15 @@
+const _ = require('lodash');
+const nunjucks = require('nunjucks');
 const express = require("express");
+const bodyParser = require('body-parser');
+
 const app = express();
+app.use(bodyParser());
+
+nunjucks.configure('views', {
+  autoescape: true,
+  express: app
+});
 
 const stateMachine = require('./domain/state-machine');
 const ScoreBoard = require('./domain/score-board');
@@ -10,7 +20,7 @@ const taskExecutor = {
   execute(res, task) {
 
     if (task.task == 'promptRegistration') {
-      res.send({task: 'PromptRegistration'});
+      res.render('registration.html');
     }
 
     if (task.task == 'addUsersToScoreBoard') {
@@ -18,7 +28,16 @@ const taskExecutor = {
     }
 
     if (task.task == 'promptPlayerEnterScore') {
-      res.send({task: 'promptPlayerEnterScore'});
+      const context = {
+        playerNo: task.player,
+        frameNo: task.frame,
+        bowlNo: task.bowl,
+        scoreBoard: scoreBoard.getScoreBoard(),
+        nameMapping: scoreBoard.getPlayers(),
+        playerName: scoreBoard.getPlayerNameById(task.player)
+      };
+
+      res.render('player-enter-score.html', context);
     }
 
     if (task.task == 'updateScoreBoard') {
@@ -42,11 +61,19 @@ var server = app.listen(8090, function () {
     tasks.forEach(task => taskExecutor.execute(res, task));
   });
 
+  app.post('/registration', function(req, res){
+    const users = _.map(req.body, (value, key) => ({id: key, name: value})).filter(x => x.name);
+
+    const tasks = stateMachine.registration(users);
+
+    tasks.forEach(task => taskExecutor.execute(res, task));
+  });
+
   app.post('/score/:player/:frame/:bowl', function (req, res) {
-    const player = 1;
-    const frame = 1;
-    const bowl = 1;
-    const score = 5;
+    const player = parseInt(req.params.player);
+    const frame = parseInt(req.params.frame);
+    const bowl = parseInt(req.params.bowl);
+    const score = parseInt(req.body.score);
 
     const tasks = stateMachine.enterPlayerScore(scoreBoard, player, frame, bowl, score);
 

@@ -17,38 +17,38 @@ const ScoreBoard = require('./domain/score-board');
 const scoreBoard = new ScoreBoard();
 
 const taskExecutor = {
-  execute(res, task) {
+  execute(res) {
+    return function(task) {
+      if (task.task == 'promptRegistration') {
+        res.render('registration.html');
+      }
 
-    if (task.task == 'promptRegistration') {
-      res.render('registration.html');
+      if (task.task == 'addUsersToScoreBoard') {
+        scoreBoard.initialiseScoreBoard(task.users);
+      }
+
+      if (task.task == 'promptPlayerEnterScore') {
+        const context = {
+          playerNo: task.player,
+          frameNo: task.frame,
+          bowlNo: task.bowl,
+          scoreBoard: scoreBoard.getScoreBoard(),
+          nameMapping: scoreBoard.getPlayers(),
+          playerName: scoreBoard.getPlayerNameById(task.player)
+        };
+
+        res.render('player-enter-score.html', context);
+      }
+
+      if (task.task == 'updateScoreBoard') {
+        scoreBoard.addScoreToPerson(
+          task.player,
+          task.frame,
+          task.bowl,
+          task.score
+        )
+      }
     }
-
-    if (task.task == 'addUsersToScoreBoard') {
-      scoreBoard.initialiseScoreBoard(task.users);
-    }
-
-    if (task.task == 'promptPlayerEnterScore') {
-      const context = {
-        playerNo: task.player,
-        frameNo: task.frame,
-        bowlNo: task.bowl,
-        scoreBoard: scoreBoard.getScoreBoard(),
-        nameMapping: scoreBoard.getPlayers(),
-        playerName: scoreBoard.getPlayerNameById(task.player)
-      };
-
-      res.render('player-enter-score.html', context);
-    }
-
-    if (task.task == 'updateScoreBoard') {
-      scoreBoard.addScoreToPerson(
-        task.player,
-        task.frame,
-        task.bowl,
-        task.score
-      )
-    }
-
   }
 };
 
@@ -58,7 +58,7 @@ var server = app.listen(8090, function () {
   app.get('/', function (req, res) {
     const tasks = stateMachine.begin();
 
-    tasks.forEach(task => taskExecutor.execute(res, task));
+    tasks.forEach(taskExecutor.execute(res));
   });
 
   app.post('/registration', function(req, res){
@@ -66,7 +66,7 @@ var server = app.listen(8090, function () {
 
     const tasks = stateMachine.registration(users);
 
-    tasks.forEach(task => taskExecutor.execute(res, task));
+    tasks.forEach(taskExecutor.execute(res));
   });
 
   app.post('/score/:player/:frame/:bowl', function (req, res) {
@@ -77,7 +77,7 @@ var server = app.listen(8090, function () {
 
     const tasks = stateMachine.enterPlayerScore(scoreBoard, player, frame, bowl, score);
 
-    tasks.forEach(task => taskExecutor.execute(res, task));
+    tasks.forEach(taskExecutor.execute(res));
   });
 
 });

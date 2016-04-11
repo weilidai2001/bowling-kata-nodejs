@@ -3,9 +3,14 @@
 const _ = require('lodash');
 
 module.exports = class ScoreBoard {
-  constructor(){
-    this.scoreBoard = {};
-    this.nameMapping = {};
+  constructor(data){
+    if (data){
+      this.scoreBoard = data.scoreBoard;
+      this.nameMapping = data.nameMapping;
+    } else {
+      this.scoreBoard = {};
+      this.nameMapping = {};
+    }
   }
 
   initialiseScoreBoard (users) {
@@ -42,5 +47,12 @@ module.exports = class ScoreBoard {
 
   getPlayerNameById (id) {
     return this.nameMapping[id];
+  }
+
+  serialise () {
+    return {
+      scoreBoard: this.scoreBoard,
+      nameMapping: this.nameMapping
+    };
   }
 };

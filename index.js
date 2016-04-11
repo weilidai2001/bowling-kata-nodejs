@@ -2,9 +2,11 @@ const _ = require('lodash');
 const nunjucks = require('nunjucks');
 const express = require("express");
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const assert = require('assert');
 
 const app = express();
+app.use(cookieParser());
 app.use(bodyParser());
 
 nunjucks.configure('views', {
@@ -15,11 +17,9 @@ nunjucks.configure('views', {
 const stateMachine = require('./domain/state-machine');
 const ScoreBoard = require('./domain/score-board');
 
-const scoreBoard = new ScoreBoard();
-
 const taskExecutor = {
-  execute(res) {
-    return function(task) {
+  execute(res, scoreBoard) {
+    return function (task) {
       if (task.task == 'promptRegistration') {
         res.render('registration.html');
       }
@@ -43,6 +43,8 @@ const taskExecutor = {
           nameMapping: scoreBoard.getPlayers(),
           playerName: scoreBoard.getPlayerNameById(task.player)
         };
+
+        res.cookie('score_board', scoreBoard.serialise());
 
         res.render('player-enter-score.html', context);
       }
@@ -73,23 +75,29 @@ var server = app.listen(8090, function () {
     tasks.forEach(taskExecutor.execute(res));
   });
 
-  app.post('/registration', function(req, res){
+  app.post('/registration', function (req, res) {
     const users = _.map(req.body, (value, key) => ({id: key, name: value})).filter(x => x.name);
+
+    const scoreBoard = new ScoreBoard();
 
     const tasks = stateMachine.registration(users);
 
-    tasks.forEach(taskExecutor.execute(res));
+    tasks.forEach(taskExecutor.execute(res, scoreBoard));
   });
 
   app.post('/score/:player/:frame/:bowl', function (req, res) {
+    const scoreBoardData = req.cookies.score_board;
+
     const player = parseInt(req.params.player);
     const frame = parseInt(req.params.frame);
     const bowl = parseInt(req.params.bowl);
     const score = parseInt(req.body.score);
 
+    const scoreBoard = new ScoreBoard(scoreBoardData);
+
     const tasks = stateMachine.enterPlayerScore(scoreBoard, player, frame, bowl, score);
 
-    tasks.forEach(taskExecutor.execute(res));
+    tasks.forEach(taskExecutor.execute(res, scoreBoard));
   });
 
 });

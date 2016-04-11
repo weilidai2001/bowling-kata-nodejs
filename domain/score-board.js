@@ -1,42 +1,46 @@
+'use strict';
+
 const _ = require('lodash');
 
-module.exports = function () {
-  var scoreBoard = {};
-  var nameMapping = {};
+module.exports = class ScoreBoard {
+  constructor(){
+    this.scoreBoard = {};
+    this.nameMapping = {};
+  }
 
-  this.initialiseScoreBoard = function (users) {
-    users.forEach(user => nameMapping[user.id] = user.name);
+  initialiseScoreBoard (users) {
+    users.forEach(user => this.nameMapping[user.id] = user.name);
 
-    scoreBoard = {};
+    this.scoreBoard = {};
   };
 
-  this.playersCount = function () {
-    return _.keys(nameMapping).length;
+  playersCount () {
+    return _.keys(this.nameMapping).length;
   };
 
-  this.getScore = function (playerNo, frameNo, bowlNo) {
-    return scoreBoard[playerNo][frameNo][bowlNo];
+  getScore (playerNo, frameNo, bowlNo) {
+    return this.scoreBoard[playerNo][frameNo][bowlNo];
   };
 
-  this.addScoreToPerson = function (playerNo, frameNo, bowlNo, score) {
-    if (!scoreBoard[playerNo])
-      scoreBoard[playerNo] = {};
+  addScoreToPerson (playerNo, frameNo, bowlNo, score) {
+    if (!this.scoreBoard[playerNo])
+      this.scoreBoard[playerNo] = {};
 
-    if (!scoreBoard[playerNo][frameNo])
-      scoreBoard[playerNo][frameNo] = {};
+    if (!this.scoreBoard[playerNo][frameNo])
+      this.scoreBoard[playerNo][frameNo] = {};
 
-    scoreBoard[playerNo][frameNo][bowlNo] = score;
+    this.scoreBoard[playerNo][frameNo][bowlNo] = score;
   };
 
-  this.getScoreBoard = function () {
-    return scoreBoard;
+  getScoreBoard () {
+    return this.scoreBoard;
   };
 
-  this.getPlayers = function() {
-    return _.map(nameMapping, (value, key) => ({id: key, name: value}));
+  getPlayers () {
+    return _.map(this.nameMapping, (value, key) => ({id: key, name: value}));
   };
 
-  this.getPlayerNameById = function(id) {
-    return nameMapping[id];
+  getPlayerNameById (id) {
+    return this.nameMapping[id];
   }
 };

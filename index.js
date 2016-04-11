@@ -2,6 +2,7 @@ const _ = require('lodash');
 const nunjucks = require('nunjucks');
 const express = require("express");
 const bodyParser = require('body-parser');
+const assert = require('assert');
 
 const app = express();
 app.use(bodyParser());
@@ -24,10 +25,16 @@ const taskExecutor = {
       }
 
       if (task.task == 'addUsersToScoreBoard') {
+        assert('users' in task, `'users' not in task`);
+
         scoreBoard.initialiseScoreBoard(task.users);
       }
 
       if (task.task == 'promptPlayerEnterScore') {
+        assert('player' in task, `'player' not in task`);
+        assert('frame' in task, `'frameNo' not in task`);
+        assert('bowl' in task, `'bowlNo' not in task`);
+
         const context = {
           playerNo: task.player,
           frameNo: task.frame,
@@ -41,6 +48,11 @@ const taskExecutor = {
       }
 
       if (task.task == 'updateScoreBoard') {
+        assert('player' in task, `'player' not in task`);
+        assert('frame' in task, `'frame' not in task`);
+        assert('bowl' in task, `'bowl' not in task`);
+        assert('score' in task, `'score' not in task`);
+
         scoreBoard.addScoreToPerson(
           task.player,
           task.frame,

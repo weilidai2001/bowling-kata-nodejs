@@ -16,7 +16,7 @@ nunjucks.configure('views', {
 
 const stateMachine = require('./domain/state-machine');
 const ScoreBoard = require('./domain/score-board');
-const GameState = require('./domain/game-state');
+const GameStateFactory = require('./domain/game-state-factory');
 
 const taskExecutor = {
   execute(res, scoreBoard) {
@@ -96,7 +96,7 @@ var server = app.listen(8090, function () {
 
     const scoreBoard = new ScoreBoard(scoreBoardData);
 
-    const gameState = new GameState(scoreBoard);
+    const gameState = GameStateFactory.createGameState(scoreBoard, player, frame, bowl, score);
 
     const tasks = stateMachine.enterPlayerScore(gameState);
 

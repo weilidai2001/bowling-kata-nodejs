@@ -1,48 +1,41 @@
 const stateMachine = require('../../domain/state-machine');
-const GameState = require('../../domain/game-state');
 const should = require('should');
 
 describe('State Machine', function () {
   describe('Game playing', function () {
     it('should prompt for same player to bowl again if first bowl and not strike', function () {
-      const playerNo = 1;
-      const frameNo = 1;
-      const bowlNo = 1;
-      const score = 5;
+      const currentPlayerNo = 1;
+      const currentFrameNo = 1;
+      const currentBowlNo = 1;
+      const currentScore = 5;
 
       const isFinalBowlInFrame = false;
       const isFinalPlayerInFrame = false;
       const isFinalFrame = false;
 
       const stubGameState = {
-        currentPlayerNo: playerNo,
-        currentFrameNo: frameNo,
-        currentBowlNo: bowlNo,
-        currentScore: score,
-        isFinalBowlInFrame() {
-          return isFinalBowlInFrame;
-        },
-        isFinalPlayerInFrame() {
-          return isFinalPlayerInFrame;
-        },
-        isFinalFrame() {
-          return isFinalFrame;
-        }
+        currentPlayerNo: currentPlayerNo,
+        currentFrameNo: currentFrameNo,
+        currentBowlNo: currentBowlNo,
+        currentScore: currentScore,
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
         {
           task: 'updateScoreBoard',
-          player: playerNo,
-          frame: frameNo,
-          bowl: bowlNo,
-          score: score
+          player: currentPlayerNo,
+          frame: currentFrameNo,
+          bowl: currentBowlNo,
+          score: currentScore
         },
         {
           task: 'promptPlayerEnterScore',
-          player: playerNo,
-          frame: frameNo,
-          bowl: bowlNo + 1
+          player: currentPlayerNo,
+          frame: currentFrameNo,
+          bowl: currentBowlNo + 1
         }
       ];
 
@@ -66,15 +59,9 @@ describe('State Machine', function () {
         currentFrameNo: frameNo,
         currentBowlNo: bowlNo,
         currentScore: score,
-        isFinalBowlInFrame() {
-          return isFinalBowlInFrame;
-        },
-        isFinalPlayerInFrame() {
-          return isFinalPlayerInFrame;
-        },
-        isFinalFrame() {
-          return isFinalFrame;
-        }
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -112,15 +99,9 @@ describe('State Machine', function () {
         currentFrameNo: frameNo,
         currentBowlNo: bowlNo,
         currentScore: score,
-        isFinalBowlInFrame() {
-          return isFinalBowlInFrame;
-        },
-        isFinalPlayerInFrame() {
-          return isFinalPlayerInFrame;
-        },
-        isFinalFrame() {
-          return isFinalFrame;
-        }
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -175,15 +156,9 @@ describe('State Machine', function () {
         currentFrameNo: frameNo,
         currentBowlNo: bowlNo,
         currentScore: score,
-        isFinalBowlInFrame() {
-          return isFinalBowlInFrame;
-        },
-        isFinalPlayerInFrame() {
-          return isFinalPlayerInFrame;
-        },
-        isFinalFrame() {
-          return isFinalFrame;
-        }
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const tasks = stateMachine.enterPlayerScore(stubGameState);
@@ -206,15 +181,9 @@ describe('State Machine', function () {
         currentFrameNo: frameNo,
         currentBowlNo: bowlNo,
         currentScore: score,
-        isFinalBowlInFrame() {
-          return isFinalBowlInFrame;
-        },
-        isFinalPlayerInFrame() {
-          return isFinalPlayerInFrame;
-        },
-        isFinalFrame() {
-          return isFinalFrame;
-        }
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -244,13 +213,18 @@ describe('State Machine', function () {
       const bowlNo = 2;
       const score = 5;
 
-      const stubScoreBoard = {
-        playersCount(){
-          return 2;
-        },
-        getScore(){
-          return 5; // first bowl + second bowl = 10 which is a spare
-        }
+      const isFinalBowlInFrame = false;
+      const isFinalPlayerInFrame = false;
+      const isFinalFrame = true;
+
+      const stubGameState = {
+        currentPlayerNo: playerNo,
+        currentFrameNo: frameNo,
+        currentBowlNo: bowlNo,
+        currentScore: score,
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -269,9 +243,7 @@ describe('State Machine', function () {
         }
       ];
 
-      const gameState = new GameState(stubScoreBoard, playerNo, frameNo, bowlNo, score);
-
-      const tasks = stateMachine.enterPlayerScore(gameState);
+      const tasks = stateMachine.enterPlayerScore(stubGameState);
 
       tasks.should.be.eql(expectedTasks);
     });
@@ -282,13 +254,18 @@ describe('State Machine', function () {
       const bowlNo = 2;
       const score = 0;
 
-      const stubScoreBoard = {
-        playersCount(){
-          return 2;
-        },
-        getScore(){
-          return 5; // first bowl + second bowl < 10
-        }
+      const isFinalBowlInFrame = true;
+      const isFinalPlayerInFrame = false;
+      const isFinalFrame = true;
+
+      const stubGameState = {
+        currentPlayerNo: playerNo,
+        currentFrameNo: frameNo,
+        currentBowlNo: bowlNo,
+        currentScore: score,
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -307,9 +284,7 @@ describe('State Machine', function () {
         }
       ];
 
-      const gameState = new GameState(stubScoreBoard, playerNo, frameNo, bowlNo, score);
-
-      const tasks = stateMachine.enterPlayerScore(gameState);
+      const tasks = stateMachine.enterPlayerScore(stubGameState);
 
       tasks.should.be.eql(expectedTasks);
     });
@@ -320,13 +295,18 @@ describe('State Machine', function () {
       const bowlNo = 2;
       const score = 0;
 
-      const stubScoreBoard = {
-        playersCount(){
-          return 2;
-        },
-        getScore(){
-          return 5; // first bowl + second bowl < 10
-        }
+      const isFinalBowlInFrame = true;
+      const isFinalPlayerInFrame = true;
+      const isFinalFrame = true;
+
+      const stubGameState = {
+        currentPlayerNo: playerNo,
+        currentFrameNo: frameNo,
+        currentBowlNo: bowlNo,
+        currentScore: score,
+        isFinalBowlInFrame: isFinalBowlInFrame,
+        isFinalPlayerInFrame: isFinalPlayerInFrame,
+        isFinalFrame: isFinalFrame
       };
 
       const expectedTasks = [
@@ -342,9 +322,7 @@ describe('State Machine', function () {
         }
       ];
 
-      const gameState = new GameState(stubScoreBoard, playerNo, frameNo, bowlNo, score);
-
-      const tasks = stateMachine.enterPlayerScore(gameState);
+      const tasks = stateMachine.enterPlayerScore(stubGameState);
 
       tasks.should.be.eql(expectedTasks);
     });

@@ -24,7 +24,7 @@ const StateMachine = {
   },
 
   enterPlayerScore (gameState) {
-    if (!gameState.isFinalBowlInFrame()) {
+    if (!gameState.isFinalBowlInFrame) {
       return [
         {
           task: 'updateScoreBoard',
@@ -42,7 +42,7 @@ const StateMachine = {
       ]
     }
 
-    if (!gameState.isFinalPlayerInFrame()) {
+    if (!gameState.isFinalPlayerInFrame) {
       return [
         {
           task: 'updateScoreBoard',
@@ -60,7 +60,7 @@ const StateMachine = {
       ]
     }
 
-    if (!gameState.isFinalFrame()) {
+    if (!gameState.isFinalFrame) {
       return [
         {
           task: 'updateScoreBoard',
